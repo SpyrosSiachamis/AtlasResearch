@@ -13,3 +13,9 @@ ollama_model = ChatOllama(
     temperature=0,
     num_ctx=8192
 )
+qwen3_5_fallback = ChatOllama(
+    model="qwen3.5:9b",
+    base_url="http://localhost:11434",
+    temperature=0,
+    num_ctx=8192
+)

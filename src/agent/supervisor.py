@@ -1,5 +1,5 @@
 from langchain.agents import create_agent
-from providers.provider import google_model
+from providers.provider import google_model, qwen3_5_fallback
 from dotenv import load_dotenv
 from agent.tools.subagent_generation import *
 import asyncio
@@ -61,7 +61,11 @@ Provide a concise, reasoned conclusion that directly addresses the research ques
 - Prioritize accuracy, balanced reasoning, and clarity over length.
 """
 thread_config: RunnableConfig = {"configurable": {"thread_id": "1"}}
-supervisor = create_agent(model=google_model, tools=[generate_positive_research_agent,generate_negative_research_agent], system_prompt=SYSTEM_INSTRUCTIONS, checkpointer=InMemorySaver())
+ollama_fallback_model = qwen3_5_fallback
+supervisor_model = google_model.with_fallbacks(
+    [ollama_fallback_model]
+)
+supervisor = create_agent(model=ollama_fallback_model, tools=[generate_positive_research_agent,generate_negative_research_agent], system_prompt=SYSTEM_INSTRUCTIONS, checkpointer=InMemorySaver())
 config: RunnableConfig = {
         **thread_config,
         "recursion_limit": 25,
